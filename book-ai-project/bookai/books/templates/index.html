@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Book Intelligence Assistant</title>
+
+<style>
+
+/* Base page styling with background image and font */
+body {
+    font-family: Arial;
+    margin: 0;
+    background: url('https://images.unsplash.com/photo-1519389950473-47ba0277781c') no-repeat center center/cover;
+    color: white;
+}
+
+/* Dark overlay to improve text visibility on background */
+body::before {
+    content: "";
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,50,0.7);
+    z-index: -1;
+}
+
+/* Main heading styling */
+h1 {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Top input section (search bar + button) */
+.top {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Input box styling */
+input {
+    padding: 10px;
+    width: 260px;
+    border-radius: 5px;
+    border: none;
+}
+
+/* Ask button styling */
+button {
+    padding: 10px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Main layout: chat on left, books on right */
+.container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+/* Chat section width */
+.chat {
+    width: 55%;
+}
+
+/* Books section width */
+.books {
+    width: 40%;
+}
+
+/* User message bubble */
+.chat-user {
+    background: #dbeafe;
+    color: black;
+    padding: 14px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    margin-left: 50px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* AI response bubble */
+.chat-ai {
+    background: #e0f2fe;
+    color: black;
+    padding: 14px;
+    margin-bottom: 14px;
+    border-radius: 12px;
+    margin-right: 50px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* Individual book card styling */
+.book {
+    padding: 14px;
+    margin-bottom: 14px;
+    border-radius: 12px;
+    color: black;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* Footer section styling */
+footer {
+    background: #0f172a;
+    color: #cbd5f5;
+    padding: 30px;
+    margin-top: 30px;
+}
+
+/* Footer layout (multi-column like professional sites) */
+.footer-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+/* Highlight "Available Books" heading */
+.books h2 {
+    color: #38bdf8;
+    font-weight: bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>📚 Book Intelligence Assistant</h1>
+
+<!-- Input area where user asks questions -->
+<div class="top">
+<input id="q" placeholder="Ask about Python, Java, AI...">
+<button onclick="ask()">Ask</button>
+</div>
+
+<div class="container">
+
+<!-- Chat section (left side) -->
+<div class="chat">
+<h2>💬 Chat</h2>
+<div id="chat"></div>
+</div>
+
+<!-- Books section (right side) -->
+<div class="books">
+<h2>📖 Available Books</h2>
+
+<div id="books"></div>
+</div>
+
+</div>
+
+<script>
+
+/* Handles user question submission */
+function ask(){
+    let q = document.getElementById("q").value;
+
+    /* Prevent empty input */
+    if(!q){
+        alert("Enter a question");
+        return;
+    }
+
+    /* Send question to backend API */
+    fetch('/api/ask/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({question: q})
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        let chat = document.getElementById("chat");
+
+        /* Create chat UI for user and AI response */
+        let newMessage = `
+        <div class="chat-user">
+        <b>🧑 You:</b> ${q}
+        </div>
+
+        <div class="chat-ai">
+        <b>🤖 AI:</b> ${data.answer}
+        </div>
+        `;
+
+        /* Add new message at top (latest first) */
+        chat.innerHTML = newMessage + chat.innerHTML;
+    });
+
+    /* Clear input field after sending */
+    document.getElementById("q").value="";
+}
+
+/* Predefined color palette for book cards */
+const colors = [
+"#e0f2fe","#fef3c7","#dcfce7","#fce7f3",
+"#fde2e2","#e9d5ff","#cffafe","#fcd34d",
+"#bbf7d0","#fecaca","#ddd6fe","#fef9c3",
+"#bae6fd","#d1fae5","#fbcfe8","#fde68a"
+];
+
+/* Fetch and display available books */
+fetch('/api/books/')
+.then(res => res.json())
+.then(data => {
+
+    let html = "";
+
+    /* Loop through books and assign colors dynamically */
+    data.forEach((book, index) => {
+        html += `
+        <div class="book" style="background:${colors[index % colors.length]}">
+        <h3>${book.title}</h3>
+        <p>${book.description}</p>
+        </div>
+        `;
+    });
+
+    document.getElementById("books").innerHTML = html;
+});
+
+/* Allow pressing Enter key to submit question */
+document.getElementById("q").addEventListener("keypress", function(e){
+    if(e.key === "Enter"){
+        ask();
+    }
+});
+
+</script>
+
+<!-- Footer section (project info like professional websites) -->
+<footer>
+
+<div class="footer-container">
+
+<div>
+<h3>Book Intelligence Assistant</h3>
+<p>Smart AI-based Book Query System</p>
+<p>© 2026 All rights reserved</p>
+</div>
+
+<div>
+<h4>Project</h4>
+<p>RAG System</p>
+<p>Book Database</p>
+<p>Smart Matching</p>
+<p>AI Responses</p>
+</div>
+
+<div>
+<h4>Technologies</h4>
+<p>Django</p>
+<p>Python</p>
+<p>JavaScript</p>
+<p>HTML & CSS</p>
+</div>
+
+<div>
+<h4>Developer</h4>
+<p>Bhanu</p>
+<p>BTech ECE</p>
+<p>Web Developer</p>
+</div>
+
+<div>
+<h4>Features</h4>
+<p>Chat History</p>
+<p>Fast Response</p>
+<p>Clean UI</p>
+<p>Book Insights</p>
+<p>Uses RAG to retrieve answers from book data</p>
+</div>
+
+</div>
+
+</footer>
+
+</body>
+</html>
