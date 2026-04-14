@@ -60,3 +60,49 @@ A: Python is a high-level programming language...
 
 ## 🧠 Approach
 Uses Retrieval-Augmented Generation (RAG) to fetch answers from stored book data.
+
+
+
+## 🧪 Samples for Testing
+
+Below are some sample inputs and expected outputs to test the system:
+
+---
+
+### Input:
+What is Python?
+
+### Output:
+Python is a high-level programming language used for backend development, data science, and automation.
+
+---
+
+### Input:
+What is Java?
+
+### Output:
+Java is an object-oriented programming language widely used for building applications.
+
+---
+
+### Input:
+Explain Artificial Intelligence
+
+### Output:
+Artificial Intelligence enables machines to simulate human intelligence and perform tasks like learning and decision-making.
+
+---
+
+### Input:
+What is Data Structures?
+
+### Output:
+Data structures organize and store data efficiently for processing and retrieval.
+
+---
+
+### Input:
+What is Operating System?
+
+### Output:
+An operating system manages computer hardware and software resources and provides services for applications.
